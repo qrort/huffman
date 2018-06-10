@@ -1,6 +1,6 @@
 #ifndef TREEIMPL
 #define TREEIMPL
-#include <iostream>
+#include <fstream>
 #include <vector>
 
 struct huffman_tree{
