@@ -122,8 +122,8 @@ void huffman_tree::encode(istream& in, ostream& out) {//ok
     char cur = 0; int cnt = 0;
     while (in) {
         in.read(reinterpret_cast<char*>(buf), BUF_SIZE);
-        int sz = in.gcount();
-        for (int i = 0; i < sz; i++) {
+        size_t sz = in.gcount();
+        for (size_t i = 0; i < sz; i++) {
             const auto& seq = code[buf[i]];
             for (bool b : seq) {
                 cur |= (b << cnt);
