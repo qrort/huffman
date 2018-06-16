@@ -5,9 +5,10 @@ using namespace std;
 void encode(string input_filename, string target_filename) {
 	ifstream in;
     ofstream out;
-	
-	in.open(input_filename);
+    in.open(input_filename);
     out.open(target_filename);
+
+    if (!in.is_open() || !out.is_open()) throw runtime_error("Could not open files");
 
     huffman_tree current;
 
@@ -26,9 +27,11 @@ void encode(string input_filename, string target_filename) {
 void decode(string input_filename, string target_filename) {
     ifstream in;
     ofstream out;
-	
+
     in.open(input_filename);
     out.open(target_filename);
+
+    if (!in.is_open() || !out.is_open()) throw runtime_error("Could not open files");
 
 	huffman_tree current;
     current.read(in);
@@ -40,11 +43,16 @@ void decode(string input_filename, string target_filename) {
 }
 
 int main(int argc, char* argv[]) {
-    string type(argv[1]);
-    if (type == "-e") {
-        encode(string(argv[2]), string(argv[3]));
-    } else if (type == "-d") {
-        decode(string(argv[2]), string(argv[3]));
-	} else throw runtime_error("Wrong query");
+    try {
+        string type(argv[1]);
+        if (type == "-e") {
+            encode(string(argv[2]), string(argv[3]));
+        } else if (type == "-d") {
+            decode(string(argv[2]), string(argv[3]));
+        }
+    } catch (...) {
+        throw runtime_error("Wrong query");
+    }
+
     return 0;
 }

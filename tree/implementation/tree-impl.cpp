@@ -8,21 +8,22 @@ int const BUF_SIZE = (1 << 20);
 
 huffman_tree huffman_tree::make(istream& in) {
     unsigned char c, act = 'a';
-    while(in >> noskipws >> c) {
+    in >> noskipws;
+    while(in >> c) {
         freq[c]++;
         act = c;
     }
-    set <pair <int, int>> unused;
+    set <pair <int, int>> rem_vertexes;
     for (int i = 0; i < 256; i++) if (freq[i]) {
-        unused.insert({freq[i], data.size()});
+        rem_vertexes.insert({freq[i], data.size()});
         data.push_back(vertex(true, i));
     }
-    while (unused.size() > 1) {
-        auto a = *unused.begin();
-        unused.erase(unused.begin());
-        auto b = *unused.begin();
-        unused.erase(unused.begin());
-        unused.insert({a.first + b.first, data.size()});
+    while (rem_vertexes.size() > 1) {
+        auto a = *rem_vertexes.begin();
+        rem_vertexes.erase(rem_vertexes.begin());
+        auto b = *rem_vertexes.begin();
+        rem_vertexes.erase(rem_vertexes.begin());
+        rem_vertexes.insert({a.first + b.first, data.size()});
         data.push_back(vertex(false, 0, a.second, b.second));
     }
     if (data.empty()) {
@@ -33,7 +34,7 @@ huffman_tree huffman_tree::make(istream& in) {
 }
 
 void huffman_tree::parse_vertexes(int i, vector <bool> & edges, string & symbols, int & e, int & s) {
-    data.push_back(vertex(false, 0));
+    data.push_back(vertex());
     if (edges[e++]) {
         data[i] = vertex(true, symbols[s++]);
     } else {
@@ -113,7 +114,8 @@ void huffman_tree::get_codes(int i, vector <vector <bool>> & code, vector <bool>
 
 void huffman_tree::encode(istream& in, ostream& out) {//ok
     auto begin = out.tellp();
-    out << ' ';
+    //out << ' ';
+    out.put(' ');
     vector <vector<bool>> code(256);
     vector <bool> mem;
     get_codes(root, code, mem);
@@ -122,25 +124,28 @@ void huffman_tree::encode(istream& in, ostream& out) {//ok
     char cur = 0; int cnt = 0;
     while (in) {
         in.read(reinterpret_cast<char*>(buf), BUF_SIZE);
-        int sz = in.gcount();
-        for (int i = 0; i < sz; i++) {
+        size_t sz = in.gcount();
+        for (size_t i = 0; i < sz; i++) {
             const auto& seq = code[buf[i]];
             for (bool b : seq) {
                 cur |= (b << cnt);
                 cnt++;
                 if (cnt == 8) {
-                    out << cur;
+                    out.put(cur);
+                    //out << cur;
                     cur = 0; cnt = 0;
                 }
             }
         }
     }
     if (cnt) {
-        out << cur;
+        //out << cur;
+        out.put(cur);
         cnt = 8 - cnt;
     }
     out.seekp(begin);
-    out << char(cnt);
+    out.put(char(cnt));
+    //out << char(cnt);
 }
 
 void huffman_tree::decode(istream& in, ostream& out) {
@@ -162,7 +167,8 @@ void huffman_tree::decode(istream& in, ostream& out) {
                     throw runtime_error("Encoded file is corrupted");
                 }
                 if (data[v].terminal) {
-                    out << data[v].symbol;
+                    out.put(data[v].symbol);
+                    //out << data[v].symbol;
                     v = root;
                 }
             }

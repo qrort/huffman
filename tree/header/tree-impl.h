@@ -1,6 +1,6 @@
 #ifndef TREEIMPL
 #define TREEIMPL
-#include <iostream>
+#include <fstream>
 #include <vector>
 
 struct huffman_tree{
@@ -10,7 +10,7 @@ private:
         bool terminal;
         unsigned char symbol;
         int l, r;
-		vertex() {}
+        vertex() : terminal(false), symbol(0), l(-1), r(-1) {}
         vertex(bool terminal, unsigned char symbol, int l = -1, int r = -1) : terminal(terminal), symbol(symbol), l(l), r(r) {}
     };
     std::vector <vertex> data;
