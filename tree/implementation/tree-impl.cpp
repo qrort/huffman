@@ -12,19 +12,26 @@ huffman_tree huffman_tree::make(istream& in) {
         freq[c]++;
         act = c;
     }
+    // нормальное название
     set <pair <int, int>> unused;
-    for (int i = 0; i < 256; i++) if (freq[i]) {
-        unused.insert({freq[i], data.size()});
-        data.push_back(vertex(true, i));
+    for (int i = 0; i < 256; i++) {
+        if (freq[i]) {
+            unused.insert({freq[i], data.size()});
+            data.push_back(vertex(true, i));
+        }
     }
+
     while (unused.size() > 1) {
         auto a = *unused.begin();
         unused.erase(unused.begin());
+
         auto b = *unused.begin();
         unused.erase(unused.begin());
+
         unused.insert({a.first + b.first, data.size()});
         data.push_back(vertex(false, 0, a.second, b.second));
     }
+
     if (data.empty()) {
         data.push_back(vertex(true, act));
     }
@@ -34,11 +41,13 @@ huffman_tree huffman_tree::make(istream& in) {
 
 void huffman_tree::parse_vertexes(int i, vector <bool> & edges, string & symbols, int & e, int & s) {
     data.push_back(vertex(false, 0));
+    // мда
     if (edges[e++]) {
         data[i] = vertex(true, symbols[s++]);
     } else {
         data[i].l = data.size();
         parse_vertexes(data.size(), edges, symbols, e, s);
+
         data[i].r = data.size();
         parse_vertexes(data.size(), edges, symbols, e, s);
     }
@@ -50,17 +59,22 @@ huffman_tree huffman_tree::read(istream& in) {//ok
     int sz, alph;
     in >> sz;
     if (!in) throw runtime_error("Encoded file is corrupted");
+
     in >> alph;
     if (!in) throw runtime_error("Encoded file is corrupted");
+
     unsigned char c;
     in >> noskipws >> c;
     if (!in) throw runtime_error("Encoded file is corrupted");
+
     if (c != ' ' || sz < 0 || alph < 0) throw runtime_error("Encoded file is corrupted");
+
     while (sz--) {
        in >> c;
        if (c != '1' && c != '0' || !in) throw runtime_error("Encoded file is corrupted");
        edges.push_back(c == '1');
     }
+
     while (alph--) {
         in >> c;
         if (!(0 <= c && c < 256) || (alph && !in)) throw runtime_error("Encoded file is corrupted");
@@ -92,8 +106,10 @@ void huffman_tree::write(ostream& out) {//ok
     vector <unsigned char> output;
     dfs(output, root, out, false);
     size_t tree_size = output.size();
+
     dfs(output, root, out, true);
     out << tree_size << ' ' << output.size() - tree_size << ' ';
+
     for (auto c : output) out << c;
 }
 
