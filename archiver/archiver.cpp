@@ -2,44 +2,35 @@
 
 using namespace std;
 
-void encode(string input_filename, string target_filename) {
-	ifstream in;
-    ofstream out;
-	
-	in.open(input_filename);
-    out.open(target_filename);
+void encode(string const &input_filename, string const &target_filename) {
+	ifstream in(input_filename);
+    ofstream out(target_filename);
+    // если не смог открыть файлы?
 
     huffman_tree current;
 
     current.make(in);
     current.write(out);
 
-    in.close();
-    in.open(input_filename);
+    in.clear();
+    in.seekg(0);
 
     current.encode(in, out);
-
-    in.close();
-    out.close();
 }
 
-void decode(string input_filename, string target_filename) {
-    ifstream in;
-    ofstream out;
-	
-    in.open(input_filename);
-    out.open(target_filename);
+void decode(string const &input_filename, string const &target_filename) {
+    ifstream in(input_filename);
+    ofstream out(target_filename);
+    // если не смог открыть файлы?
 
 	huffman_tree current;
     current.read(in);
 
     current.decode(in, out);
-
-	in.close();
-    out.close();
 }
 
 int main(int argc, char* argv[]) {
+    // а если не передал аргумент?
     string type(argv[1]);
     if (type == "-e") {
         encode(string(argv[2]), string(argv[3]));
